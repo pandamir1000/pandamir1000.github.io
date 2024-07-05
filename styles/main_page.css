@@ -1,0 +1,34 @@
+#crossword_table {
+	border-spacing: 0px;
+}
+td {
+  width: 60px;
+  height: 60px;
+  aspect-ratio: 1;
+  border: 1px solid black;
+}
+.cell_div {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.char_inputs {
+	position: absolute; /*since the parent has position relative this works and overlays the definitions */
+	width: 100%;
+	height: 100%;
+	top:0;
+	right:0;
+	resize: none;
+	border : 0px;
+  	background: rgba(0, 0, 0, 0); /* no background */
+  	padding: 0;
+  	align-content: center;
+  	text-align: center;
+  	font-size: 30px;
+}
+
+.definitions{
+	position: absolute;
+	top:0;
+	right:0;
+}
