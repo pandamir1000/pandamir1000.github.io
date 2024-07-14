@@ -18,6 +18,7 @@ const big_crossword = {'width': 13 ,
 let CURRENT_SELECTED_CELL = null;
 let CURRENT_SELECTED_DEFINITION = null;
 let DEFINITIONS_ALL_CELLS = {};
+let CELL_CLICKED = -1;
 
 function create_html_table(height, width) {
   const tbl = document.createElement("table");
@@ -117,7 +118,7 @@ function select_def(cell_num) {
 
 	if(CURRENT_SELECTED_DEFINITION[0] == cell_num) {
 		const num_of_directions = DEFINITIONS_ALL_CELLS[cell_num].length //will be two or one
-		const new_index = (CURRENT_SELECTED_DEFINITION[1] + 1) % num_of_directions;
+		const new_index = mod((CURRENT_SELECTED_DEFINITION[1] + 1), num_of_directions);
 		CURRENT_SELECTED_DEFINITION = [cell_num, new_index, DEFINITIONS_ALL_CELLS[cell_num][new_index]]
 		console.log("CURRENT_SELECTED_DEFINITION:" + CURRENT_SELECTED_DEFINITION.toString)
 	}
@@ -171,7 +172,9 @@ function create_text_boxes(){
 		text_area.classList.add("char_inputs");
 		const cell_num = parseInt(cell_div.id.substring("cell_div-".length));
 		text_area.id = `text_area-${cell_num}`;
-		text_area.oninput = function () {next_cell(cell_num)}
+		text_area.addEventListener("keydown", function (key_event) {key_down_input(key_event, cell_num)})
+		text_area.addEventListener("keyup", function (key_event) {key_up_input(key_event, cell_num)})
+		text_area.addEventListener("input", function (key_event) {key_input_input(key_event, cell_num)})
 		cell_div.appendChild(text_area);
 
 	}
@@ -182,16 +185,44 @@ function initiate_select(){
 	CURRENT_SELECTED_DEFINITION = [0,-1,[0,0]];
 }
 
-function next_cell(cell_num) {
+function move_cell(cell_num, jump) {
 	const curr_ind = CURRENT_SELECTED_DEFINITION[2].indexOf(cell_num)
 	if (curr_ind == -1) {return}
 	CURRENT_SELECTED_CELL.style.backgroundColor = "green"
 	const def_len = CURRENT_SELECTED_DEFINITION[2].length
-	const new_cell_num = CURRENT_SELECTED_DEFINITION[2][(curr_ind + 1) % def_len]
+	const new_cell_num = CURRENT_SELECTED_DEFINITION[2][mod((curr_ind + jump), def_len)]
 	select_cell(`cell_div-${new_cell_num}`)
 	document.getElementById(`text_area-${new_cell_num}`).focus()
 	console.log("next_cell")
+}
 
+function key_down_input(key_event, cell_num) {
+	CELL_CLICKED = cell_num
+	console.log("this key is down")
+	console.log(key_event.key)
+	const existing_text = document.getElementById(`text_area-${cell_num}`).value
+	if (key_event.key == "Backspace" && existing_text == "") {
+		move_cell(cell_num, -1)
+	}
+}
+
+function key_input_input(key_event, cell_num) {	
+	if (key_event.data == null) {
+		return
+	}
+	move_cell(cell_num, 1)
+}
+
+function key_up_input(key_event, cell_num) {
+	console.log("this key is up")
+	console.log(key_event.key)
+	if (CELL_CLICKED != cell_num) {return}
+	if (key_event.key == "Backspace") {return}
+
+	const existing_text = document.getElementById(`text_area-${cell_num}`).value
+	if ((key_event.code.substr(0,3) == "Key" || (key_event.key == "Unidentified") && existing_text != "")) {
+		move_cell(cell_num, 1)
+	}
 }
 
 function reset_globals() {
