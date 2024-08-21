@@ -244,3 +244,22 @@ function create_crossword(crossword_layout) {
 
   initiate_select()
 }
+
+function save_crossword() {
+    const cell_divs = document.getElementsByClassName("cell_div");
+	for (let cell_div of cell_divs) {
+		const cell_num = parseInt(cell_div.id.substring("cell_div-".length));
+		let text_area = document.getElementById(`text_area-${cell_num}`);
+	    localStorage.setItem(cell_num, text_area.value);
+	}
+}
+
+function load_crossword() {
+    const cell_divs = document.getElementsByClassName("cell_div");
+	for (let cell_div of cell_divs) {
+		const cell_num = parseInt(cell_div.id.substring("cell_div-".length));
+		let text = localStorage.getItem(cell_num);
+		let text_area = document.getElementById(`text_area-${cell_num}`);
+		text_area.value = text;
+	}
+}
