@@ -1,5 +1,6 @@
 #crossword_table {
 	border-spacing: 0px;
+	margin-top: 30px;
 }
 td {
   width: 60px;
